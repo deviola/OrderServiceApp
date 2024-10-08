@@ -1,0 +1,16 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<databaseChangeLog
+        xmlns="http://www.liquibase.org/xml/ns/dbchangelog"
+        xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+        xsi:schemaLocation="http://www.liquibase.org/xml/ns/dbchangelog
+        http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-3.8.xsd">
+
+    <include file="db/changelog/v001-create-products-table.sql"/>
+    <include file="db/changelog/v002-create-orders-table.sql"/>
+    <include file="db/changelog/v003-create-order-items-table.sql"/>
+    <include file="/db/changelog/v004-insert-data-into-product-table.sql"/>
+    <include file="/db/changelog/v005-create-history-table-for-orders.sql"/>
+    <include file="db/changelog/v006-create-order-items-history-table.sql"/>
+    <include file="/db/changelog/v007-create-orders-history-after-update-trigger.sql"/>
+    <include file="db/changelog/v008-create-order-items-after-insert-trigger.sql"/>
+</databaseChangeLog>
