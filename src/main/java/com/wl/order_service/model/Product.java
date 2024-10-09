@@ -1,6 +1,5 @@
 package com.wl.order_service.model;
 
-import com.wl.order_service.BaseEntity;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.Table;

@@ -1,6 +1,5 @@
 package com.wl.order_service.model;
 
-import com.wl.order_service.BaseEntity;
 import jakarta.persistence.*;
 import lombok.Data;
 import lombok.experimental.FieldDefaults;
