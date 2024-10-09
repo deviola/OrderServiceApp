@@ -4,15 +4,15 @@ import com.wl.order_service.exception.AppException;
 import com.wl.order_service.exception.AppExceptionMessage;
 import com.wl.order_service.mapper.OrderMapper;
 import com.wl.order_service.model.Order;
-import com.wl.order_service.model.request.OrderRequest;
-import com.wl.order_service.model.response.OrderResponse;
-import com.wl.order_service.model.OrderStatus;
 import com.wl.order_service.model.OrderItem;
+import com.wl.order_service.model.OrderStatus;
+import com.wl.order_service.model.Product;
 import com.wl.order_service.model.request.OrderItemRequest;
+import com.wl.order_service.model.request.OrderRequest;
 import com.wl.order_service.model.response.OrderItemResponse;
+import com.wl.order_service.model.response.OrderResponse;
 import com.wl.order_service.repository.OrderRepository;
 import com.wl.order_service.repository.ProductRepository;
-import com.wl.order_service.model.Product;
 import com.wl.order_service.service.impl.OrderServiceImpl;
 import com.wl.order_service.validator.OrderValidator;
 import org.junit.jupiter.api.DisplayName;
@@ -25,8 +25,8 @@ import org.mockito.junit.jupiter.MockitoExtension;
 import java.time.LocalDateTime;
 import java.util.Arrays;
 import java.util.Collections;
-import java.util.Optional;
 import java.util.List;
+import java.util.Optional;
 
 import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.Mockito.*;
@@ -225,6 +225,28 @@ public class OrderServiceImplTest {
 
 		assertNotNull(exception);
 		assertEquals("Stock quantity cannot be less than 0", exception.getMessage());
+
+		verify(productRepository, times(1)).findById(itemRequest.getProductId());
+		verify(orderValidator, times(1)).validateProductOrderItemRequest(itemRequest, product);
+		verifyNoInteractions(orderMapper);
+		verifyNoMoreInteractions(orderRepository);
+	}
+
+	@Test
+	@DisplayName("Expected error: Creating an order when product is out of stock")
+	public void testCreateOrder_ProductOutOfStock_ThrowsException() {
+		OrderItemRequest itemRequest = createOrderItemRequest(1L, 1);
+		OrderRequest request = createOrderRequest(Collections.singletonList(itemRequest));
+		Product product = createProduct(1L, "Product A", 0, 100.0);
+
+		when(productRepository.findById(itemRequest.getProductId())).thenReturn(Optional.of(product));
+		doThrow(new AppException(AppExceptionMessage.OUT_OF_STOCK, product.getId()))
+				.when(orderValidator).validateProductOrderItemRequest(itemRequest, product);
+
+		AppException exception = assertThrows(AppException.class, () -> orderService.createOrder(request));
+
+		assertNotNull(exception);
+		assertEquals(String.format("Product with ID '%d' is out of stock.", product.getId()), exception.getMessage());
 
 		verify(productRepository, times(1)).findById(itemRequest.getProductId());
 		verify(orderValidator, times(1)).validateProductOrderItemRequest(itemRequest, product);
